@@ -257,10 +257,10 @@ export default function Results() {
             font-weight: bold;
             color: #fff;
         }
-        .sapna-avatar {
+        .participant-0-avatar {
             background: #9333ea;
         }
-        .rohit-avatar {
+        .participant-1-avatar {
             background: #2563eb;
         }
         .key-indicators {
@@ -391,15 +391,15 @@ export default function Results() {
                 <h3>⚡ Response Speed</h3>
                 <p>${analysis?.CommunicationPatterns?.ResponseSpeed?.overall || "Response time patterns"}</p>
                 <div style="font-size: 12px; margin-top: 8px;">
-                    <div>Sapna: ${analysis?.CommunicationPatterns?.ResponseSpeed?.sapna || "N/A"}</div>
-                    <div>Rohit: ${analysis?.CommunicationPatterns?.ResponseSpeed?.rohit || "N/A"}</div>
+                    <div>${participants[0]}: ${analysis?.CommunicationPatterns?.ResponseSpeed?.[participants[0].toLowerCase()] || "N/A"}</div>
+                    <div>${participants[1]}: ${analysis?.CommunicationPatterns?.ResponseSpeed?.[participants[1].toLowerCase()] || "N/A"}</div>
                 </div>
             </div>
             <div class="communication-item">
                 <h3>🎯 Initiation</h3>
                 <div style="font-size: 12px;">
-                    <div>Sapna: ${analysis?.CommunicationPatterns?.Initiation?.sapna || "N/A"}</div>
-                    <div>Rohit: ${analysis?.CommunicationPatterns?.Initiation?.rohit || "N/A"}</div>
+                    <div>${participants[0]}: ${analysis?.CommunicationPatterns?.Initiation?.[participants[0].toLowerCase()] || "N/A"}</div>
+                    <div>${participants[1]}: ${analysis?.CommunicationPatterns?.Initiation?.[participants[1].toLowerCase()] || "N/A"}</div>
                 </div>
             </div>
         </div>
@@ -438,12 +438,12 @@ export default function Results() {
             <p>${analysis.ProblemSolvingStyle.pattern}</p>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px;">
                 <div>
-                    <h3 style="color: #9333ea;">Sapna's Approach</h3>
-                    <p>${analysis.ProblemSolvingStyle.sapna}</p>
+                    <h3 style="color: #9333ea;">${participants[0]}'s Approach</h3>
+                    <p>${analysis.ProblemSolvingStyle[participants[0].toLowerCase()]}</p>
                 </div>
                 <div>
-                    <h3 style="color: #2563eb;">Rohit's Approach</h3>
-                    <p>${analysis.ProblemSolvingStyle.rohit}</p>
+                    <h3 style="color: #2563eb;">${participants[1]}'s Approach</h3>
+                    <p>${analysis.ProblemSolvingStyle[participants[1].toLowerCase()]}</p>
                 </div>
             </div>
         </div>
@@ -457,18 +457,19 @@ export default function Results() {
 
         <div class="participant-section">
             <div class="participant-header">
-                <div class="participant-avatar sapna-avatar">S</div>
-                <h3>Sapna's Emotional State</h3>
+                <div class="participant-avatar participant-0-avatar">${participants[0].charAt(0).toUpperCase()}</div>
+                <h3>${participants[0]}'s Emotional State</h3>
             </div>
-            <p>${analysis?.EmotionalLandscape?.Sapna?.state || "Emotional state analysis"}</p>
+            <p>${analysis?.EmotionalLandscape?.[participants[0]]?.state || "Emotional state analysis"}</p>
             ${
-              analysis?.EmotionalLandscape?.Sapna?.keyIndicators &&
-              analysis.EmotionalLandscape.Sapna.keyIndicators.length > 0
+              analysis?.EmotionalLandscape?.[participants[0]]?.keyIndicators &&
+              analysis.EmotionalLandscape[participants[0]].keyIndicators
+                .length > 0
                 ? `
             <div class="key-indicators">
                 <h4>Key Emotional Indicators</h4>
                 <ul class="details-list">
-                    ${analysis.EmotionalLandscape.Sapna.keyIndicators.map((indicator: string) => `<li>${indicator}</li>`).join("")}
+                    ${analysis.EmotionalLandscape[participants[0]].keyIndicators.map((indicator: string) => `<li>${indicator}</li>`).join("")}
                 </ul>
             </div>
             `
@@ -478,18 +479,19 @@ export default function Results() {
 
         <div class="participant-section">
             <div class="participant-header">
-                <div class="participant-avatar rohit-avatar">R</div>
-                <h3>Rohit's Emotional State</h3>
+                <div class="participant-avatar participant-1-avatar">${participants[1].charAt(0).toUpperCase()}</div>
+                <h3>${participants[1]}'s Emotional State</h3>
             </div>
-            <p>${analysis?.EmotionalLandscape?.Rohit?.state || "Emotional state analysis"}</p>
+            <p>${analysis?.EmotionalLandscape?.[participants[1]]?.state || "Emotional state analysis"}</p>
             ${
-              analysis?.EmotionalLandscape?.Rohit?.keyIndicators &&
-              analysis.EmotionalLandscape.Rohit.keyIndicators.length > 0
+              analysis?.EmotionalLandscape?.[participants[1]]?.keyIndicators &&
+              analysis.EmotionalLandscape[participants[1]].keyIndicators
+                .length > 0
                 ? `
             <div class="key-indicators">
                 <h4>Key Emotional Indicators</h4>
                 <ul class="details-list">
-                    ${analysis.EmotionalLandscape.Rohit.keyIndicators.map((indicator: string) => `<li>${indicator}</li>`).join("")}
+                    ${analysis.EmotionalLandscape[participants[1]].keyIndicators.map((indicator: string) => `<li>${indicator}</li>`).join("")}
                 </ul>
             </div>
             `
@@ -547,8 +549,8 @@ export default function Results() {
             <div class="subsection">
                 <h3 class="subsection-title">Conversational Power</h3>
                 <div class="subsection-content">
-                    <p><strong>Sapna:</strong> ${analysis.PowerDynamicsAndControl.ConversationalPower.sapna}</p>
-                    <p><strong>Rohit:</strong> ${analysis.PowerDynamicsAndControl.ConversationalPower.rohit}</p>
+                    <p><strong>${participants[0]}:</strong> ${analysis.PowerDynamicsAndControl.ConversationalPower[participants[0].toLowerCase()]}</p>
+                    <p><strong>${participants[1]}:</strong> ${analysis.PowerDynamicsAndControl.ConversationalPower[participants[1].toLowerCase()]}</p>
                 </div>
             </div>
             `
@@ -761,11 +763,11 @@ export default function Results() {
             font-size: 12px;
         }
 
-        .sapna-avatar {
+        .participant-0-avatar {
             background: #9333ea;
         }
 
-        .rohit-avatar {
+        .participant-1-avatar {
             background: #2563eb;
         }
 
@@ -946,15 +948,15 @@ export default function Results() {
                 <h3>⚡ Response Speed</h3>
                 <p>${analysis?.CommunicationPatterns?.ResponseSpeed?.overall || "Response time patterns"}</p>
                 <div style="font-size: 9px; margin-top: 4px;">
-                    <div>Sapna: ${analysis?.CommunicationPatterns?.ResponseSpeed?.sapna || "N/A"}</div>
-                    <div>Rohit: ${analysis?.CommunicationPatterns?.ResponseSpeed?.rohit || "N/A"}</div>
+                    <div>${participants[0]}: ${analysis?.CommunicationPatterns?.ResponseSpeed?.[participants[0].toLowerCase()] || "N/A"}</div>
+                    <div>${participants[1]}: ${analysis?.CommunicationPatterns?.ResponseSpeed?.[participants[1].toLowerCase()] || "N/A"}</div>
                 </div>
             </div>
             <div class="communication-item">
                 <h3>🎯 Initiation</h3>
                 <div style="font-size: 9px;">
-                    <div>Sapna: ${analysis?.CommunicationPatterns?.Initiation?.sapna || "N/A"}</div>
-                    <div>Rohit: ${analysis?.CommunicationPatterns?.Initiation?.rohit || "N/A"}</div>
+                    <div>${participants[0]}: ${analysis?.CommunicationPatterns?.Initiation?.[participants[0].toLowerCase()] || "N/A"}</div>
+                    <div>${participants[1]}: ${analysis?.CommunicationPatterns?.Initiation?.[participants[1].toLowerCase()] || "N/A"}</div>
                 </div>
             </div>
         </div>
@@ -993,12 +995,12 @@ export default function Results() {
             <p>${analysis.ProblemSolvingStyle.pattern}</p>
             <div class="two-column" style="margin-top: 12px;">
                 <div>
-                    <h3 style="color: #9333ea; font-size: 12px;">Sapna's Approach</h3>
-                    <p>${analysis.ProblemSolvingStyle.sapna}</p>
+                    <h3 style="color: #9333ea; font-size: 12px;">${participants[0]}'s Approach</h3>
+                    <p>${analysis.ProblemSolvingStyle[participants[0].toLowerCase()]}</p>
                 </div>
                 <div>
-                    <h3 style="color: #2563eb; font-size: 12px;">Rohit's Approach</h3>
-                    <p>${analysis.ProblemSolvingStyle.rohit}</p>
+                    <h3 style="color: #2563eb; font-size: 12px;">${participants[1]}'s Approach</h3>
+                    <p>${analysis.ProblemSolvingStyle[participants[1].toLowerCase()]}</p>
                 </div>
             </div>
         </div>
@@ -1012,18 +1014,19 @@ export default function Results() {
 
         <div class="participant-section">
             <div class="participant-header">
-                <div class="participant-avatar sapna-avatar">S</div>
-                <h3>Sapna's Emotional State</h3>
+                <div class="participant-avatar participant-0-avatar">${participants[0].charAt(0).toUpperCase()}</div>
+                <h3>${participants[0]}'s Emotional State</h3>
             </div>
-            <p style="font-size: 11px;">${analysis?.EmotionalLandscape?.Sapna?.state || "Emotional state analysis"}</p>
+            <p style="font-size: 11px;">${analysis?.EmotionalLandscape?.[participants[0]]?.state || "Emotional state analysis"}</p>
             ${
-              analysis?.EmotionalLandscape?.Sapna?.keyIndicators &&
-              analysis.EmotionalLandscape.Sapna.keyIndicators.length > 0
+              analysis?.EmotionalLandscape?.[participants[0]]?.keyIndicators &&
+              analysis.EmotionalLandscape[participants[0]].keyIndicators
+                .length > 0
                 ? `
             <div class="key-indicators">
                 <h4 style="font-size: 11px; margin-bottom: 6px;">Key Emotional Indicators</h4>
                 <ul class="details-list">
-                    ${analysis.EmotionalLandscape.Sapna.keyIndicators.map((indicator: string) => `<li>${indicator}</li>`).join("")}
+                    ${analysis.EmotionalLandscape[participants[0]].keyIndicators.map((indicator: string) => `<li>${indicator}</li>`).join("")}
                 </ul>
             </div>
             `
@@ -1033,18 +1036,19 @@ export default function Results() {
 
         <div class="participant-section">
             <div class="participant-header">
-                <div class="participant-avatar rohit-avatar">R</div>
-                <h3>Rohit's Emotional State</h3>
+                <div class="participant-avatar participant-1-avatar">${participants[1].charAt(0).toUpperCase()}</div>
+                <h3>${participants[1]}'s Emotional State</h3>
             </div>
-            <p style="font-size: 11px;">${analysis?.EmotionalLandscape?.Rohit?.state || "Emotional state analysis"}</p>
+            <p style="font-size: 11px;">${analysis?.EmotionalLandscape?.[participants[1]]?.state || "Emotional state analysis"}</p>
             ${
-              analysis?.EmotionalLandscape?.Rohit?.keyIndicators &&
-              analysis.EmotionalLandscape.Rohit.keyIndicators.length > 0
+              analysis?.EmotionalLandscape?.[participants[1]]?.keyIndicators &&
+              analysis.EmotionalLandscape[participants[1]].keyIndicators
+                .length > 0
                 ? `
             <div class="key-indicators">
                 <h4 style="font-size: 11px; margin-bottom: 6px;">Key Emotional Indicators</h4>
                 <ul class="details-list">
-                    ${analysis.EmotionalLandscape.Rohit.keyIndicators.map((indicator: string) => `<li>${indicator}</li>`).join("")}
+                    ${analysis.EmotionalLandscape[participants[1]].keyIndicators.map((indicator: string) => `<li>${indicator}</li>`).join("")}
                 </ul>
             </div>
             `
@@ -1105,8 +1109,8 @@ export default function Results() {
             <div class="subsection">
                 <h3 class="subsection-title">Conversational Power</h3>
                 <div class="subsection-content">
-                    <p><strong>Sapna:</strong> ${analysis.PowerDynamicsAndControl.ConversationalPower.sapna}</p>
-                    <p><strong>Rohit:</strong> ${analysis.PowerDynamicsAndControl.ConversationalPower.rohit}</p>
+                    <p><strong>${participants[0]}:</strong> ${analysis.PowerDynamicsAndControl.ConversationalPower[participants[0].toLowerCase()]}</p>
+                    <p><strong>${participants[1]}:</strong> ${analysis.PowerDynamicsAndControl.ConversationalPower[participants[1].toLowerCase()]}</p>
                 </div>
             </div>
             `
@@ -1417,14 +1421,16 @@ export default function Results() {
                   </p>
                   <div className="text-xs text-gray-500">
                     <div>
-                      Sapna:{" "}
-                      {analysis?.CommunicationPatterns?.ResponseSpeed?.sapna ||
-                        "N/A"}
+                      {participants[0]}:{" "}
+                      {analysis?.CommunicationPatterns?.ResponseSpeed?.[
+                        participants[0].toLowerCase()
+                      ] || "N/A"}
                     </div>
                     <div>
-                      Rohit:{" "}
-                      {analysis?.CommunicationPatterns?.ResponseSpeed?.rohit ||
-                        "N/A"}
+                      {participants[1]}:{" "}
+                      {analysis?.CommunicationPatterns?.ResponseSpeed?.[
+                        participants[1].toLowerCase()
+                      ] || "N/A"}
                     </div>
                   </div>
                 </div>
@@ -1437,14 +1443,16 @@ export default function Results() {
                   <h3 className="font-semibold text-lg mb-2">Initiation</h3>
                   <div className="text-xs text-gray-500">
                     <div>
-                      Sapna:{" "}
-                      {analysis?.CommunicationPatterns?.Initiation?.sapna ||
-                        "N/A"}
+                      {participants[0]}:{" "}
+                      {analysis?.CommunicationPatterns?.Initiation?.[
+                        participants[0].toLowerCase()
+                      ] || "N/A"}
                     </div>
                     <div>
-                      Rohit:{" "}
-                      {analysis?.CommunicationPatterns?.Initiation?.rohit ||
-                        "N/A"}
+                      {participants[1]}:{" "}
+                      {analysis?.CommunicationPatterns?.Initiation?.[
+                        participants[1].toLowerCase()
+                      ] || "N/A"}
                     </div>
                   </div>
                 </div>
@@ -1525,18 +1533,26 @@ export default function Results() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <h3 className="font-semibold text-lg mb-2 text-purple-600">
-                      Sapna's Approach
+                      {participants[0]}'s Approach
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {analysis.ProblemSolvingStyle.sapna}
+                      {
+                        analysis.ProblemSolvingStyle[
+                          participants[0].toLowerCase()
+                        ]
+                      }
                     </p>
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg mb-2 text-blue-600">
-                      Rohit's Approach
+                      {participants[1]}'s Approach
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {analysis.ProblemSolvingStyle.rohit}
+                      {
+                        analysis.ProblemSolvingStyle[
+                          participants[1].toLowerCase()
+                        ]
+                      }
                     </p>
                   </div>
                 </div>
@@ -1556,30 +1572,33 @@ export default function Results() {
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 gap-8">
-                {/* Sapna's Emotional State */}
+                {/* First Participant's Emotional State */}
                 <div>
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                      S
+                      {participants[0].charAt(0).toUpperCase()}
                     </div>
                     <h3 className="text-xl font-semibold">
-                      Sapna's Emotional State
+                      {participants[0]}'s Emotional State
                     </h3>
                   </div>
                   <div className="space-y-4">
                     <p className="text-gray-300">
-                      {analysis?.EmotionalLandscape?.Sapna?.state ||
+                      {analysis?.EmotionalLandscape?.[participants[0]]?.state ||
                         "Emotional state analysis"}
                     </p>
-                    {analysis?.EmotionalLandscape?.Sapna?.keyIndicators &&
-                      analysis.EmotionalLandscape.Sapna.keyIndicators.length >
-                        0 && (
+                    {analysis?.EmotionalLandscape?.[participants[0]]
+                      ?.keyIndicators &&
+                      analysis.EmotionalLandscape[participants[0]].keyIndicators
+                        .length > 0 && (
                         <div className="bg-purple-900/30 p-3 rounded-lg">
                           <h4 className="font-semibold text-purple-300 mb-2">
                             Key Emotional Indicators
                           </h4>
                           <ul className="text-sm text-gray-300 space-y-1">
-                            {analysis.EmotionalLandscape.Sapna.keyIndicators.map(
+                            {analysis.EmotionalLandscape[
+                              participants[0]
+                            ].keyIndicators.map(
                               (indicator: string, index: number) => (
                                 <li key={index}>• {indicator}</li>
                               ),
@@ -1590,30 +1609,33 @@ export default function Results() {
                   </div>
                 </div>
 
-                {/* Rohit's Emotional State */}
+                {/* Second Participant's Emotional State */}
                 <div>
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-                      R
+                      {participants[1].charAt(0).toUpperCase()}
                     </div>
                     <h3 className="text-xl font-semibold">
-                      Rohit's Emotional State
+                      {participants[1]}'s Emotional State
                     </h3>
                   </div>
                   <div className="space-y-4">
                     <p className="text-gray-300">
-                      {analysis?.EmotionalLandscape?.Rohit?.state ||
+                      {analysis?.EmotionalLandscape?.[participants[1]]?.state ||
                         "Emotional state analysis"}
                     </p>
-                    {analysis?.EmotionalLandscape?.Rohit?.keyIndicators &&
-                      analysis.EmotionalLandscape.Rohit.keyIndicators.length >
-                        0 && (
+                    {analysis?.EmotionalLandscape?.[participants[1]]
+                      ?.keyIndicators &&
+                      analysis.EmotionalLandscape[participants[1]].keyIndicators
+                        .length > 0 && (
                         <div className="bg-blue-900/30 p-3 rounded-lg">
                           <h4 className="font-semibold text-blue-300 mb-2">
                             Key Emotional Indicators
                           </h4>
                           <ul className="text-sm text-gray-300 space-y-1">
-                            {analysis.EmotionalLandscape.Rohit.keyIndicators.map(
+                            {analysis.EmotionalLandscape[
+                              participants[1]
+                            ].keyIndicators.map(
                               (indicator: string, index: number) => (
                                 <li key={index}>• {indicator}</li>
                               ),
@@ -1699,23 +1721,27 @@ export default function Results() {
                     <div className="space-y-3">
                       <div>
                         <div className="font-medium text-sm text-purple-600 mb-1">
-                          Sapna:
+                          {participants[0]}:
                         </div>
                         <p className="text-sm text-gray-600">
                           {
-                            analysis.PowerDynamicsAndControl.ConversationalPower
-                              .sapna
+                            analysis.PowerDynamicsAndControl
+                              .ConversationalPower[
+                              participants[0].toLowerCase()
+                            ]
                           }
                         </p>
                       </div>
                       <div>
                         <div className="font-medium text-sm text-blue-600 mb-1">
-                          Rohit:
+                          {participants[1]}:
                         </div>
                         <p className="text-sm text-gray-600">
                           {
-                            analysis.PowerDynamicsAndControl.ConversationalPower
-                              .rohit
+                            analysis.PowerDynamicsAndControl
+                              .ConversationalPower[
+                              participants[1].toLowerCase()
+                            ]
                           }
                         </p>
                       </div>
