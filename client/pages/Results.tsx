@@ -50,7 +50,60 @@ export default function Results() {
 
   // Extract analysis data from the new structure
   const analysis = analysisData?.data?.analysis;
-  const participants = ["Sapna", "Rohit"]; // Fixed participants as per new structure
+
+  // Extract participant names dynamically from analysis or use default
+  const getParticipants = () => {
+    // Try to get from EmotionalLandscape first (most reliable)
+    if (analysis?.EmotionalLandscape) {
+      const names = Object.keys(analysis.EmotionalLandscape);
+      if (names.length >= 2) {
+        return names.slice(0, 2);
+      }
+    }
+
+    // Try to get from ResponseSpeed patterns
+    if (analysis?.CommunicationPatterns?.ResponseSpeed) {
+      const responseData = analysis.CommunicationPatterns.ResponseSpeed;
+      const names = Object.keys(responseData).filter(
+        (key) => key !== "overall",
+      );
+      if (names.length >= 2) {
+        // Capitalize first letter of each name
+        return names.map(
+          (name) => name.charAt(0).toUpperCase() + name.slice(1),
+        );
+      }
+    }
+
+    // Try to get from Initiation patterns
+    if (analysis?.CommunicationPatterns?.Initiation) {
+      const names = Object.keys(analysis.CommunicationPatterns.Initiation);
+      if (names.length >= 2) {
+        // Capitalize first letter of each name
+        return names.map(
+          (name) => name.charAt(0).toUpperCase() + name.slice(1),
+        );
+      }
+    }
+
+    // Try to get from ConversationalPower
+    if (analysis?.PowerDynamicsAndControl?.ConversationalPower) {
+      const names = Object.keys(
+        analysis.PowerDynamicsAndControl.ConversationalPower,
+      );
+      if (names.length >= 2) {
+        // Capitalize first letter of each name
+        return names.map(
+          (name) => name.charAt(0).toUpperCase() + name.slice(1),
+        );
+      }
+    }
+
+    // Fallback to default
+    return ["Person A", "Person B"];
+  };
+
+  const participants = getParticipants();
 
   const downloadReport = () => {
     // Create a clean HTML version of the report
@@ -664,7 +717,7 @@ export default function Results() {
         }
 
         .details-list li:before {
-            content: "•";
+            content: "��";
             color: #6366f1;
             font-weight: bold;
             position: absolute;

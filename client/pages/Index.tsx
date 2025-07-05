@@ -116,6 +116,8 @@ export default function Index() {
       const analysisPrompt = `
 Task: Analyze chats between two individuals and extract relationship dynamics with structured details.
 
+IMPORTANT: Extract the actual names of the participants from the chat data and use them consistently throughout the analysis. Do not use placeholder names.
+
 Please provide the response in the following exact JSON structure:
 
 {
@@ -155,12 +157,12 @@ Please provide the response in the following exact JSON structure:
     "Frequency": "",
     "ResponseSpeed": {
       "overall": "",
-      "sapna": "",
-      "rohit": ""
+      "[participant1_name]": "",
+      "[participant2_name]": ""
     },
     "Initiation": {
-      "sapna": "",
-      "rohit": ""
+      "[participant1_name]": "",
+      "[participant2_name]": ""
     },
     "LanguageStyle": {
       "informality": "",
@@ -172,15 +174,15 @@ Please provide the response in the following exact JSON structure:
   },
   "ProblemSolvingStyle": {
     "pattern": "",
-    "sapna": "",
-    "rohit": ""
+    "[participant1_name]": "",
+    "[participant2_name]": ""
   },
   "EmotionalLandscape": {
-    "Sapna": {
+    "[participant1_name]": {
       "state": "",
       "keyIndicators": []
     },
-    "Rohit": {
+    "[participant2_name]": {
       "state": "",
       "keyIndicators": []
     }
@@ -192,8 +194,8 @@ Please provide the response in the following exact JSON structure:
   },
   "PowerDynamicsAndControl": {
     "ConversationalPower": {
-      "sapna": "",
-      "rohit": ""
+      "[participant1_name]": "",
+      "[participant2_name]": ""
     },
     "RespectLevels": {
       "duringConflicts": "",
@@ -206,7 +208,13 @@ Please provide the response in the following exact JSON structure:
   }
 }
 
-Instructions: For each chat pair, populate the fields with concise extracted text and short bullet points where applicable. Dates should be in yyyy-mm-dd format if referenced. List repeated patterns and reference direct phrases from the chats if they show key emotional states.
+Instructions:
+1. Extract the actual participant names from the chat data
+2. Replace [participant1_name] and [participant2_name] with the real names throughout the JSON
+3. Populate all fields with concise extracted text and short bullet points where applicable
+4. Use yyyy-mm-dd format for dates if referenced
+5. List repeated patterns and reference direct phrases from the chats that show key emotional states
+6. Ensure consistency in name usage across all sections
 
 Chat Data:
 ${chatText}`;
