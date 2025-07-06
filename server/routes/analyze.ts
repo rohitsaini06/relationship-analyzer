@@ -25,6 +25,7 @@ export const handleAnalysis: RequestHandler = async (req, res) => {
 
     console.log("Sending analysis request to Gemini API...");
     console.log("Files being analyzed:", fileNames);
+    console.log(chatData);
 
     // Call Gemini API directly
     const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;

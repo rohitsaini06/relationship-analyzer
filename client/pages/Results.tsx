@@ -69,9 +69,13 @@ export default function Results() {
       );
       if (names.length >= 2) {
         // Capitalize first letter of each name
-        return names.map(
-          (name) => name.charAt(0).toUpperCase() + name.slice(1),
-        );
+        return names
+          .map((name) =>
+            name && typeof name === "string" && name.length > 0
+              ? name.charAt(0).toUpperCase() + name.slice(1)
+              : name,
+          )
+          .filter((name) => name && typeof name === "string");
       }
     }
 
@@ -80,9 +84,13 @@ export default function Results() {
       const names = Object.keys(analysis.CommunicationPatterns.Initiation);
       if (names.length >= 2) {
         // Capitalize first letter of each name
-        return names.map(
-          (name) => name.charAt(0).toUpperCase() + name.slice(1),
-        );
+        return names
+          .map((name) =>
+            name && typeof name === "string" && name.length > 0
+              ? name.charAt(0).toUpperCase() + name.slice(1)
+              : name,
+          )
+          .filter((name) => name && typeof name === "string");
       }
     }
 
@@ -93,9 +101,13 @@ export default function Results() {
       );
       if (names.length >= 2) {
         // Capitalize first letter of each name
-        return names.map(
-          (name) => name.charAt(0).toUpperCase() + name.slice(1),
-        );
+        return names
+          .map((name) =>
+            name && typeof name === "string" && name.length > 0
+              ? name.charAt(0).toUpperCase() + name.slice(1)
+              : name,
+          )
+          .filter((name) => name && typeof name === "string");
       }
     }
 
@@ -103,7 +115,55 @@ export default function Results() {
     return ["Person A", "Person B"];
   };
 
-  const participants = getParticipants();
+  const rawParticipants = getParticipants().filter(
+    (name) => name && typeof name === "string" && name.trim().length > 0,
+  );
+  const participants =
+    rawParticipants.length >= 2
+      ? rawParticipants.slice(0, 2)
+      : ["Person A", "Person B"];
+
+  // Ensure participants array always has exactly 2 valid strings
+  if (participants.length < 2) {
+    participants.push("Person B");
+  }
+  participants[0] = participants[0] || "Person A";
+  participants[1] = participants[1] || "Person B";
+
+  // Helper function to get the actual keys from the data structure
+  const getDataKeys = (dataObj: any) => {
+    if (!dataObj) return [];
+    return Object.keys(dataObj).filter(
+      (key) => key !== "overall" && key !== "pattern",
+    );
+  };
+
+  // Helper function to get participant data by trying different key formats
+  const getParticipantData = (
+    dataObj: any,
+    participantName: string | undefined,
+  ) => {
+    if (!dataObj || !participantName || typeof participantName !== "string")
+      return null;
+
+    // Try exact match first
+    if (dataObj[participantName]) return dataObj[participantName];
+
+    // Try lowercase
+    const lowerName = participantName.toLowerCase();
+    if (dataObj[lowerName]) return dataObj[lowerName];
+
+    // Try finding a key that contains the participant name (case insensitive)
+    const matchingKey = Object.keys(dataObj).find(
+      (key) =>
+        key.toLowerCase().includes(lowerName) ||
+        lowerName.includes(key.toLowerCase()),
+    );
+
+    if (matchingKey) return dataObj[matchingKey];
+
+    return null;
+  };
 
   const downloadReport = () => {
     // Create a clean HTML version of the report
@@ -114,7 +174,10 @@ export default function Results() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `relationship-analysis-${participants.join("-").toLowerCase()}-${new Date().toISOString().split("T")[0]}.html`;
+    link.download = `relationship-analysis-${participants
+      .filter((p) => p)
+      .join("-")
+      .toLowerCase()}-${new Date().toISOString().split("T")[0]}.html`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -391,15 +454,15 @@ export default function Results() {
                 <h3>⚡ Response Speed</h3>
                 <p>${analysis?.CommunicationPatterns?.ResponseSpeed?.overall || "Response time patterns"}</p>
                 <div style="font-size: 12px; margin-top: 8px;">
-                    <div>${participants[0]}: ${analysis?.CommunicationPatterns?.ResponseSpeed?.[participants[0].toLowerCase()] || "N/A"}</div>
-                    <div>${participants[1]}: ${analysis?.CommunicationPatterns?.ResponseSpeed?.[participants[1].toLowerCase()] || "N/A"}</div>
+                    <div>${participants[0]}: ${getParticipantData(analysis?.CommunicationPatterns?.ResponseSpeed, participants[0]) || "N/A"}</div>
+                    <div>${participants[1]}: ${getParticipantData(analysis?.CommunicationPatterns?.ResponseSpeed, participants[1]) || "N/A"}</div>
                 </div>
             </div>
             <div class="communication-item">
                 <h3>🎯 Initiation</h3>
                 <div style="font-size: 12px;">
-                    <div>${participants[0]}: ${analysis?.CommunicationPatterns?.Initiation?.[participants[0].toLowerCase()] || "N/A"}</div>
-                    <div>${participants[1]}: ${analysis?.CommunicationPatterns?.Initiation?.[participants[1].toLowerCase()] || "N/A"}</div>
+                    <div>${participants[0]}: ${getParticipantData(analysis?.CommunicationPatterns?.Initiation, participants[0]) || "N/A"}</div>
+                    <div>${participants[1]}: ${getParticipantData(analysis?.CommunicationPatterns?.Initiation, participants[1]) || "N/A"}</div>
                 </div>
             </div>
         </div>
@@ -439,11 +502,11 @@ export default function Results() {
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px;">
                 <div>
                     <h3 style="color: #9333ea;">${participants[0]}'s Approach</h3>
-                    <p>${analysis.ProblemSolvingStyle[participants[0].toLowerCase()]}</p>
+                    <p>${getParticipantData(analysis.ProblemSolvingStyle, participants[0]) || "No data available"}</p>
                 </div>
                 <div>
                     <h3 style="color: #2563eb;">${participants[1]}'s Approach</h3>
-                    <p>${analysis.ProblemSolvingStyle[participants[1].toLowerCase()]}</p>
+                    <p>${getParticipantData(analysis.ProblemSolvingStyle, participants[1]) || "No data available"}</p>
                 </div>
             </div>
         </div>
@@ -457,19 +520,27 @@ export default function Results() {
 
         <div class="participant-section">
             <div class="participant-header">
-                <div class="participant-avatar participant-0-avatar">${participants[0].charAt(0).toUpperCase()}</div>
+                <div class="participant-avatar participant-0-avatar">${participants[0]?.charAt(0)?.toUpperCase() || "P"}</div>
                 <h3>${participants[0]}'s Emotional State</h3>
             </div>
-            <p>${analysis?.EmotionalLandscape?.[participants[0]]?.state || "Emotional state analysis"}</p>
+            <p>${getParticipantData(analysis?.EmotionalLandscape, participants[0])?.state || "Emotional state analysis"}</p>
             ${
-              analysis?.EmotionalLandscape?.[participants[0]]?.keyIndicators &&
-              analysis.EmotionalLandscape[participants[0]].keyIndicators
-                .length > 0
+              getParticipantData(analysis?.EmotionalLandscape, participants[0])
+                ?.keyIndicators &&
+              getParticipantData(analysis.EmotionalLandscape, participants[0])
+                .keyIndicators.length > 0
                 ? `
             <div class="key-indicators">
                 <h4>Key Emotional Indicators</h4>
                 <ul class="details-list">
-                    ${analysis.EmotionalLandscape[participants[0]].keyIndicators.map((indicator: string) => `<li>${indicator}</li>`).join("")}
+                    ${getParticipantData(
+                      analysis.EmotionalLandscape,
+                      participants[0],
+                    )
+                      .keyIndicators.map(
+                        (indicator: string) => `<li>${indicator}</li>`,
+                      )
+                      .join("")}
                 </ul>
             </div>
             `
@@ -479,19 +550,27 @@ export default function Results() {
 
         <div class="participant-section">
             <div class="participant-header">
-                <div class="participant-avatar participant-1-avatar">${participants[1].charAt(0).toUpperCase()}</div>
+                <div class="participant-avatar participant-1-avatar">${participants[1]?.charAt(0)?.toUpperCase() || "P"}</div>
                 <h3>${participants[1]}'s Emotional State</h3>
             </div>
-            <p>${analysis?.EmotionalLandscape?.[participants[1]]?.state || "Emotional state analysis"}</p>
+            <p>${getParticipantData(analysis?.EmotionalLandscape, participants[1])?.state || "Emotional state analysis"}</p>
             ${
-              analysis?.EmotionalLandscape?.[participants[1]]?.keyIndicators &&
-              analysis.EmotionalLandscape[participants[1]].keyIndicators
-                .length > 0
+              getParticipantData(analysis?.EmotionalLandscape, participants[1])
+                ?.keyIndicators &&
+              getParticipantData(analysis.EmotionalLandscape, participants[1])
+                .keyIndicators.length > 0
                 ? `
             <div class="key-indicators">
                 <h4>Key Emotional Indicators</h4>
                 <ul class="details-list">
-                    ${analysis.EmotionalLandscape[participants[1]].keyIndicators.map((indicator: string) => `<li>${indicator}</li>`).join("")}
+                    ${getParticipantData(
+                      analysis.EmotionalLandscape,
+                      participants[1],
+                    )
+                      .keyIndicators.map(
+                        (indicator: string) => `<li>${indicator}</li>`,
+                      )
+                      .join("")}
                 </ul>
             </div>
             `
@@ -549,8 +628,8 @@ export default function Results() {
             <div class="subsection">
                 <h3 class="subsection-title">Conversational Power</h3>
                 <div class="subsection-content">
-                    <p><strong>${participants[0]}:</strong> ${analysis.PowerDynamicsAndControl.ConversationalPower[participants[0].toLowerCase()]}</p>
-                    <p><strong>${participants[1]}:</strong> ${analysis.PowerDynamicsAndControl.ConversationalPower[participants[1].toLowerCase()]}</p>
+                    <p><strong>${participants[0]}:</strong> ${getParticipantData(analysis.PowerDynamicsAndControl.ConversationalPower, participants[0]) || "No data available"}</p>
+                    <p><strong>${participants[1]}:</strong> ${getParticipantData(analysis.PowerDynamicsAndControl.ConversationalPower, participants[1]) || "No data available"}</p>
                 </div>
             </div>
             `
@@ -719,7 +798,7 @@ export default function Results() {
         }
 
         .details-list li:before {
-            content: "��";
+            content: "����";
             color: #6366f1;
             font-weight: bold;
             position: absolute;
@@ -948,15 +1027,15 @@ export default function Results() {
                 <h3>⚡ Response Speed</h3>
                 <p>${analysis?.CommunicationPatterns?.ResponseSpeed?.overall || "Response time patterns"}</p>
                 <div style="font-size: 9px; margin-top: 4px;">
-                    <div>${participants[0]}: ${analysis?.CommunicationPatterns?.ResponseSpeed?.[participants[0].toLowerCase()] || "N/A"}</div>
-                    <div>${participants[1]}: ${analysis?.CommunicationPatterns?.ResponseSpeed?.[participants[1].toLowerCase()] || "N/A"}</div>
+                    <div>${participants[0]}: ${getParticipantData(analysis?.CommunicationPatterns?.ResponseSpeed, participants[0]) || "N/A"}</div>
+                    <div>${participants[1]}: ${getParticipantData(analysis?.CommunicationPatterns?.ResponseSpeed, participants[1]) || "N/A"}</div>
                 </div>
             </div>
             <div class="communication-item">
                 <h3>🎯 Initiation</h3>
                 <div style="font-size: 9px;">
-                    <div>${participants[0]}: ${analysis?.CommunicationPatterns?.Initiation?.[participants[0].toLowerCase()] || "N/A"}</div>
-                    <div>${participants[1]}: ${analysis?.CommunicationPatterns?.Initiation?.[participants[1].toLowerCase()] || "N/A"}</div>
+                    <div>${participants[0]}: ${getParticipantData(analysis?.CommunicationPatterns?.Initiation, participants[0]) || "N/A"}</div>
+                    <div>${participants[1]}: ${getParticipantData(analysis?.CommunicationPatterns?.Initiation, participants[1]) || "N/A"}</div>
                 </div>
             </div>
         </div>
@@ -996,11 +1075,11 @@ export default function Results() {
             <div class="two-column" style="margin-top: 12px;">
                 <div>
                     <h3 style="color: #9333ea; font-size: 12px;">${participants[0]}'s Approach</h3>
-                    <p>${analysis.ProblemSolvingStyle[participants[0].toLowerCase()]}</p>
+                    <p>${getParticipantData(analysis.ProblemSolvingStyle, participants[0]) || "No data available"}</p>
                 </div>
                 <div>
                     <h3 style="color: #2563eb; font-size: 12px;">${participants[1]}'s Approach</h3>
-                    <p>${analysis.ProblemSolvingStyle[participants[1].toLowerCase()]}</p>
+                    <p>${getParticipantData(analysis.ProblemSolvingStyle, participants[1]) || "No data available"}</p>
                 </div>
             </div>
         </div>
@@ -1014,19 +1093,27 @@ export default function Results() {
 
         <div class="participant-section">
             <div class="participant-header">
-                <div class="participant-avatar participant-0-avatar">${participants[0].charAt(0).toUpperCase()}</div>
+                <div class="participant-avatar participant-0-avatar">${participants[0]?.charAt(0)?.toUpperCase() || "P"}</div>
                 <h3>${participants[0]}'s Emotional State</h3>
             </div>
-            <p style="font-size: 11px;">${analysis?.EmotionalLandscape?.[participants[0]]?.state || "Emotional state analysis"}</p>
+            <p style="font-size: 11px;">${getParticipantData(analysis?.EmotionalLandscape, participants[0])?.state || "Emotional state analysis"}</p>
             ${
-              analysis?.EmotionalLandscape?.[participants[0]]?.keyIndicators &&
-              analysis.EmotionalLandscape[participants[0]].keyIndicators
-                .length > 0
+              getParticipantData(analysis?.EmotionalLandscape, participants[0])
+                ?.keyIndicators &&
+              getParticipantData(analysis.EmotionalLandscape, participants[0])
+                .keyIndicators.length > 0
                 ? `
             <div class="key-indicators">
                 <h4 style="font-size: 11px; margin-bottom: 6px;">Key Emotional Indicators</h4>
                 <ul class="details-list">
-                    ${analysis.EmotionalLandscape[participants[0]].keyIndicators.map((indicator: string) => `<li>${indicator}</li>`).join("")}
+                    ${getParticipantData(
+                      analysis.EmotionalLandscape,
+                      participants[0],
+                    )
+                      .keyIndicators.map(
+                        (indicator: string) => `<li>${indicator}</li>`,
+                      )
+                      .join("")}
                 </ul>
             </div>
             `
@@ -1036,19 +1123,27 @@ export default function Results() {
 
         <div class="participant-section">
             <div class="participant-header">
-                <div class="participant-avatar participant-1-avatar">${participants[1].charAt(0).toUpperCase()}</div>
+                <div class="participant-avatar participant-1-avatar">${participants[1]?.charAt(0)?.toUpperCase() || "P"}</div>
                 <h3>${participants[1]}'s Emotional State</h3>
             </div>
-            <p style="font-size: 11px;">${analysis?.EmotionalLandscape?.[participants[1]]?.state || "Emotional state analysis"}</p>
+            <p style="font-size: 11px;">${getParticipantData(analysis?.EmotionalLandscape, participants[1])?.state || "Emotional state analysis"}</p>
             ${
-              analysis?.EmotionalLandscape?.[participants[1]]?.keyIndicators &&
-              analysis.EmotionalLandscape[participants[1]].keyIndicators
-                .length > 0
+              getParticipantData(analysis?.EmotionalLandscape, participants[1])
+                ?.keyIndicators &&
+              getParticipantData(analysis.EmotionalLandscape, participants[1])
+                .keyIndicators.length > 0
                 ? `
             <div class="key-indicators">
                 <h4 style="font-size: 11px; margin-bottom: 6px;">Key Emotional Indicators</h4>
                 <ul class="details-list">
-                    ${analysis.EmotionalLandscape[participants[1]].keyIndicators.map((indicator: string) => `<li>${indicator}</li>`).join("")}
+                    ${getParticipantData(
+                      analysis.EmotionalLandscape,
+                      participants[1],
+                    )
+                      .keyIndicators.map(
+                        (indicator: string) => `<li>${indicator}</li>`,
+                      )
+                      .join("")}
                 </ul>
             </div>
             `
@@ -1109,8 +1204,8 @@ export default function Results() {
             <div class="subsection">
                 <h3 class="subsection-title">Conversational Power</h3>
                 <div class="subsection-content">
-                    <p><strong>${participants[0]}:</strong> ${analysis.PowerDynamicsAndControl.ConversationalPower[participants[0].toLowerCase()]}</p>
-                    <p><strong>${participants[1]}:</strong> ${analysis.PowerDynamicsAndControl.ConversationalPower[participants[1].toLowerCase()]}</p>
+                    <p><strong>${participants[0]}:</strong> ${getParticipantData(analysis.PowerDynamicsAndControl.ConversationalPower, participants[0]) || "No data available"}</p>
+                    <p><strong>${participants[1]}:</strong> ${getParticipantData(analysis.PowerDynamicsAndControl.ConversationalPower, participants[1]) || "No data available"}</p>
                 </div>
             </div>
             `
@@ -1422,15 +1517,17 @@ export default function Results() {
                   <div className="text-xs text-gray-500">
                     <div>
                       {participants[0]}:{" "}
-                      {analysis?.CommunicationPatterns?.ResponseSpeed?.[
-                        participants[0].toLowerCase()
-                      ] || "N/A"}
+                      {getParticipantData(
+                        analysis?.CommunicationPatterns?.ResponseSpeed,
+                        participants[0],
+                      ) || "N/A"}
                     </div>
                     <div>
                       {participants[1]}:{" "}
-                      {analysis?.CommunicationPatterns?.ResponseSpeed?.[
-                        participants[1].toLowerCase()
-                      ] || "N/A"}
+                      {getParticipantData(
+                        analysis?.CommunicationPatterns?.ResponseSpeed,
+                        participants[1],
+                      ) || "N/A"}
                     </div>
                   </div>
                 </div>
@@ -1444,15 +1541,17 @@ export default function Results() {
                   <div className="text-xs text-gray-500">
                     <div>
                       {participants[0]}:{" "}
-                      {analysis?.CommunicationPatterns?.Initiation?.[
-                        participants[0].toLowerCase()
-                      ] || "N/A"}
+                      {getParticipantData(
+                        analysis?.CommunicationPatterns?.Initiation,
+                        participants[0],
+                      ) || "N/A"}
                     </div>
                     <div>
                       {participants[1]}:{" "}
-                      {analysis?.CommunicationPatterns?.Initiation?.[
-                        participants[1].toLowerCase()
-                      ] || "N/A"}
+                      {getParticipantData(
+                        analysis?.CommunicationPatterns?.Initiation,
+                        participants[1],
+                      ) || "N/A"}
                     </div>
                   </div>
                 </div>
@@ -1536,11 +1635,10 @@ export default function Results() {
                       {participants[0]}'s Approach
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {
-                        analysis.ProblemSolvingStyle[
-                          participants[0].toLowerCase()
-                        ]
-                      }
+                      {getParticipantData(
+                        analysis.ProblemSolvingStyle,
+                        participants[0],
+                      ) || "No data available"}
                     </p>
                   </div>
                   <div>
@@ -1548,11 +1646,10 @@ export default function Results() {
                       {participants[1]}'s Approach
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {
-                        analysis.ProblemSolvingStyle[
-                          participants[1].toLowerCase()
-                        ]
-                      }
+                      {getParticipantData(
+                        analysis.ProblemSolvingStyle,
+                        participants[1],
+                      ) || "No data available"}
                     </p>
                   </div>
                 </div>
@@ -1576,7 +1673,7 @@ export default function Results() {
                 <div>
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                      {participants[0].charAt(0).toUpperCase()}
+                      {participants[0]?.charAt(0)?.toUpperCase() || "P"}
                     </div>
                     <h3 className="text-xl font-semibold">
                       {participants[0]}'s Emotional State
@@ -1584,21 +1681,28 @@ export default function Results() {
                   </div>
                   <div className="space-y-4">
                     <p className="text-gray-300">
-                      {analysis?.EmotionalLandscape?.[participants[0]]?.state ||
-                        "Emotional state analysis"}
+                      {getParticipantData(
+                        analysis?.EmotionalLandscape,
+                        participants[0],
+                      )?.state || "Emotional state analysis"}
                     </p>
-                    {analysis?.EmotionalLandscape?.[participants[0]]
-                      ?.keyIndicators &&
-                      analysis.EmotionalLandscape[participants[0]].keyIndicators
-                        .length > 0 && (
+                    {getParticipantData(
+                      analysis?.EmotionalLandscape,
+                      participants[0],
+                    )?.keyIndicators &&
+                      getParticipantData(
+                        analysis.EmotionalLandscape,
+                        participants[0],
+                      ).keyIndicators.length > 0 && (
                         <div className="bg-purple-900/30 p-3 rounded-lg">
                           <h4 className="font-semibold text-purple-300 mb-2">
                             Key Emotional Indicators
                           </h4>
                           <ul className="text-sm text-gray-300 space-y-1">
-                            {analysis.EmotionalLandscape[
-                              participants[0]
-                            ].keyIndicators.map(
+                            {getParticipantData(
+                              analysis.EmotionalLandscape,
+                              participants[0],
+                            ).keyIndicators.map(
                               (indicator: string, index: number) => (
                                 <li key={index}>• {indicator}</li>
                               ),
@@ -1613,7 +1717,7 @@ export default function Results() {
                 <div>
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-                      {participants[1].charAt(0).toUpperCase()}
+                      {participants[1]?.charAt(0)?.toUpperCase() || "P"}
                     </div>
                     <h3 className="text-xl font-semibold">
                       {participants[1]}'s Emotional State
@@ -1621,21 +1725,28 @@ export default function Results() {
                   </div>
                   <div className="space-y-4">
                     <p className="text-gray-300">
-                      {analysis?.EmotionalLandscape?.[participants[1]]?.state ||
-                        "Emotional state analysis"}
+                      {getParticipantData(
+                        analysis?.EmotionalLandscape,
+                        participants[1],
+                      )?.state || "Emotional state analysis"}
                     </p>
-                    {analysis?.EmotionalLandscape?.[participants[1]]
-                      ?.keyIndicators &&
-                      analysis.EmotionalLandscape[participants[1]].keyIndicators
-                        .length > 0 && (
+                    {getParticipantData(
+                      analysis?.EmotionalLandscape,
+                      participants[1],
+                    )?.keyIndicators &&
+                      getParticipantData(
+                        analysis.EmotionalLandscape,
+                        participants[1],
+                      ).keyIndicators.length > 0 && (
                         <div className="bg-blue-900/30 p-3 rounded-lg">
                           <h4 className="font-semibold text-blue-300 mb-2">
                             Key Emotional Indicators
                           </h4>
                           <ul className="text-sm text-gray-300 space-y-1">
-                            {analysis.EmotionalLandscape[
-                              participants[1]
-                            ].keyIndicators.map(
+                            {getParticipantData(
+                              analysis.EmotionalLandscape,
+                              participants[1],
+                            ).keyIndicators.map(
                               (indicator: string, index: number) => (
                                 <li key={index}>• {indicator}</li>
                               ),
@@ -1724,12 +1835,11 @@ export default function Results() {
                           {participants[0]}:
                         </div>
                         <p className="text-sm text-gray-600">
-                          {
+                          {getParticipantData(
                             analysis.PowerDynamicsAndControl
-                              .ConversationalPower[
-                              participants[0].toLowerCase()
-                            ]
-                          }
+                              .ConversationalPower,
+                            participants[0],
+                          ) || "No data available"}
                         </p>
                       </div>
                       <div>
@@ -1737,12 +1847,11 @@ export default function Results() {
                           {participants[1]}:
                         </div>
                         <p className="text-sm text-gray-600">
-                          {
+                          {getParticipantData(
                             analysis.PowerDynamicsAndControl
-                              .ConversationalPower[
-                              participants[1].toLowerCase()
-                            ]
-                          }
+                              .ConversationalPower,
+                            participants[1],
+                          ) || "No data available"}
                         </p>
                       </div>
                     </div>
@@ -1803,7 +1912,7 @@ export default function Results() {
                         <ul className="text-sm text-gray-600 space-y-1">
                           {analysis.TrustDynamics.Vulnerability.map(
                             (item: string, index: number) => (
-                              <li key={index}>• {item}</li>
+                              <li key={index}>��� {item}</li>
                             ),
                           )}
                         </ul>
@@ -1835,6 +1944,170 @@ export default function Results() {
             </Card>
           </section>
         )}
+
+        {/* Relationship Summary */}
+        <section className="mb-12">
+          <Card className="bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Heart className="w-6 h-6 text-red-500" />
+                <CardTitle className="text-xl text-purple-800">
+                  Relationship Summary
+                </CardTitle>
+              </div>
+              <CardDescription className="text-purple-600">
+                Overall assessment of {participants.join(" & ")}'s relationship
+                dynamics
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Connection Overview */}
+                <div className="bg-white/70 rounded-lg p-4 border border-purple-100">
+                  <h3 className="font-semibold text-lg mb-3 text-purple-700 flex items-center gap-2">
+                    <Zap className="w-5 h-5" />
+                    Connection Type
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    {analysis?.UnderlyingConnection?.strength
+                      ? `Based on the analysis, ${participants.join(" and ")} share ${analysis.UnderlyingConnection.strength?.toLowerCase() || "a connection"}. Their intimacy level shows ${analysis.UnderlyingConnection.intimacyLevel?.toLowerCase() || "varying degrees of closeness"}.`
+                      : `${participants.join(" and ")} demonstrate a complex relationship dynamic with varying patterns of communication and emotional expression.`}
+                  </p>
+                </div>
+
+                {/* Communication Style */}
+                <div className="bg-white/70 rounded-lg p-4 border border-blue-100">
+                  <h3 className="font-semibold text-lg mb-3 text-blue-700 flex items-center gap-2">
+                    <MessageCircle className="w-5 h-5" />
+                    Communication Pattern
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Their communication style reflects{" "}
+                    {analysis?.CommunicationPatterns?.ResponseSpeed?.overall?.toLowerCase() ||
+                      "varied response patterns"}
+                    .
+                    {analysis?.CommunicationPatterns?.LanguageStyle
+                      ?.informality &&
+                      ` They maintain ${analysis.CommunicationPatterns.LanguageStyle.informality?.toLowerCase() || "informal communication"} in their conversations`}
+                    {analysis?.CommunicationPatterns?.LanguageStyle
+                      ?.emojiUsage &&
+                      ` with ${analysis.CommunicationPatterns.LanguageStyle.emojiUsage?.toLowerCase() || "emoji usage"}.`}
+                  </p>
+                </div>
+
+                {/* Relationship Health Indicator */}
+                <div className="bg-white/70 rounded-lg p-4 border border-green-100">
+                  <h3 className="font-semibold text-lg mb-3 text-green-700 flex items-center gap-2">
+                    <Activity className="w-5 h-5" />
+                    Relationship Health
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600">
+                        Communication Flow
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className="bg-green-50 text-green-700 border-green-200"
+                      >
+                        {analysis?.CommunicationPatterns?.ResponseSpeed?.overall
+                          ? "Active"
+                          : "Moderate"}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600">
+                        Emotional Connection
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className="bg-blue-50 text-blue-700 border-blue-200"
+                      >
+                        {analysis?.UnderlyingConnection?.intimacyLevel
+                          ? "Present"
+                          : "Developing"}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600">
+                        Conflict Resolution
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className="bg-purple-50 text-purple-700 border-purple-200"
+                      >
+                        {analysis?.ProblemSolvingStyle?.pattern
+                          ? "Structured"
+                          : "Variable"}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Key Insights */}
+                <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg p-4 border border-purple-200">
+                  <h3 className="font-semibold text-lg mb-3 text-purple-800 flex items-center gap-2">
+                    <Brain className="w-5 h-5" />
+                    Key Relationship Insights
+                  </h3>
+                  <ul className="space-y-2 text-gray-700">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">
+                        {participants[0]} and {participants[1]} maintain{" "}
+                        {analysis?.RelationshipStatusAndHistory?.currentStatus?.toLowerCase() ||
+                          "an ongoing relationship"}{" "}
+                        with distinct communication patterns.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">
+                        Their emotional landscape shows{" "}
+                        {getParticipantData(
+                          analysis?.EmotionalLandscape,
+                          participants[0],
+                        )?.state ||
+                        getParticipantData(
+                          analysis?.EmotionalLandscape,
+                          participants[1],
+                        )?.state
+                          ? "active emotional engagement"
+                          : "developing emotional dynamics"}
+                        .
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">
+                        Power dynamics reveal{" "}
+                        {analysis?.PowerDynamicsAndControl?.ConversationalPower
+                          ? "balanced conversational participation"
+                          : "evolving communication roles"}{" "}
+                        between both individuals.
+                      </span>
+                    </li>
+                    {analysis?.OnAgainOffAgainPattern && (
+                      <li className="flex items-start gap-2">
+                        <AlertTriangle className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">
+                          The relationship shows patterns of{" "}
+                          {analysis.OnAgainOffAgainPattern.frequency?.toLowerCase() ||
+                            "intermittent patterns"}{" "}
+                          with common triggers around{" "}
+                          {analysis.OnAgainOffAgainPattern.commonTriggers
+                            ?.join(", ")
+                            ?.toLowerCase() || "various factors"}
+                          .
+                        </span>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
 
         {/* Action Buttons */}
         <div className="flex justify-center gap-4">

