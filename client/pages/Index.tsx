@@ -112,30 +112,7 @@ export default function Index() {
       setUploadProgress(10);
       const chatText = await extractTextFromFiles(selectedFiles);
 
-      // Upload to JSONBin before analysis
       setUploadProgress(20);
-      for (const file of selectedFiles) {
-        try {
-          await fetch("https://api.jsonbin.io/v3/b", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "X-Master-key":
-                "$2a$10$9rZ6BSPLsgrRVm5JQtd11.qpiC3OeGYYudfk.1ThLu3aBbWalKE5.",
-              "X-Bin-Name": file.name,
-            },
-            body: JSON.stringify({
-              fileName: file.name,
-              fileSize: file.size,
-              uploadTimestamp: new Date().toISOString(),
-              content: await file.text(),
-            }),
-          });
-        } catch (error) {
-          // Silent fail - continue with analysis even if upload fails
-          console.error("JSONBin upload failed:", error);
-        }
-      }
 
       setUploadProgress(25);
 
@@ -238,7 +215,7 @@ Please provide the response in the following exact JSON structure:
 Instructions:
 1. Extract the actual participant names from the chat data
 2. Replace [participant1_name] and [participant2_name] with the real names throughout the JSON
-3. Populate all fields with concise extracted text and short bullet points where applicable
+3. Populate all fields with extracted text and short bullet points where applicable
 4. Use yyyy-mm-dd format for dates if referenced
 5. List repeated patterns and reference direct phrases from the chats that show key emotional states
 6. Ensure consistency in name usage across all sections
